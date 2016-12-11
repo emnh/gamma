@@ -18,7 +18,7 @@
      (map
       (fn [v] (emit db {:tag :declaration :variable v}))
       (filter
-        #(not (re-matches (js/RegExp. "gl_.*") (:name %)))
+        #(not (re-matches #?(:cljs (js/RegExp. "gl_.*") :clj #"gl_.*") (:name %)))
         (concat (:inputs x) (:outputs x)))))
    :break
 
@@ -29,7 +29,7 @@
      (map
       (fn [v] (emit db {:tag :declaration :variable v}))
       (filter
-        #(not (if (:name %) (re-matches (js/RegExp. "gl_.*") (:name %))))
+        #(not (if (:name %) (re-matches #?(:cljs (js/RegExp. "gl_.*") :clj #"gl_.*") (:name %))))
         (:locals x))))
    :break
    (emit db (db :root))
@@ -47,7 +47,7 @@
       (if-let [s (:storage v)] (str (name s) " ") "")
       (if-let [p (:precision v)] (str (name p) " ") "")
       (name (:type v)) " " (emit db v) ";"])
-    (catch js/Error e (println (str "declaration error on: ") (pr-str x)))))
+    (catch #?(:cljs js/Error :clj Exception) e (println (str "declaration error on: ") (pr-str x)))))
 
 
 

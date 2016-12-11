@@ -5,6 +5,7 @@
             not=
             or
             set
+            /
             *
             +
             -
@@ -19,20 +20,22 @@
             and
             if
             for
-
             int
             float])
-  (:require [gamma.ast :as ast])
-  (:require-macros [gamma.api :as api-macro]))
+  (:require
+    [gamma.ast :as ast]
+    #?(:clj [gamma.api-macros :as api-macro]))
+  #?(:cljs (:require-macros [gamma.api-macros :as api-macro])))
 
+(println "api")
+
+(defn error [m] #?(:cljs (js/Error. m) :clj (Exception. m)))
 
 (defn vector-type [l]
   {:tag :vector :member-type :float :length l})
 
 (defn array-type [type length]
   {:tag :array :member-type type :length length})
-
-
 
 (defn attribute [name type]
   {:tag :variable :name name :type type :storage :attribute})
@@ -93,7 +96,7 @@
         t (arithmetic-type a b)]
     (if t
       (assoc (ast/term :+ a b) :type t)
-      (throw (js/Error. (str "Arguments to + must have type :int or :float"))))))
+      (throw (error (str "Arguments to + must have type :int or :float"))))))
 
 (defn - [a b]
   (let [a (ensure-term a)
@@ -101,7 +104,7 @@
         t (arithmetic-type a b)]
     (if t
       (assoc (ast/term :- a b) :type t)
-      (throw (js/Error. (str "Arguments to - must have type :int or :float"))))))
+      (throw (error (str "Arguments to - must have type :int or :float"))))))
 
 (defn * [a b]
   (let [a (ensure-term a)
@@ -109,7 +112,26 @@
         at (:type a)
         bt (:type b)]
     (if-let
-      [t (cljs.core/or
+      [t #?(:cljs (cljs.core/or
+            ({[:float :float] :float
+              [:mat4 :vec4]   :vec4
+              [:mat3 :vec3]   :vec3
+              [:mat2 :vec2]   :vec2
+              [:mat4 :mat4]   :mat4
+              [:mat3 :mat3]   :mat3
+              [:mat2 :mat2]   :mat2
+              [:vec4 :vec4]   :vec4
+              [:vec3 :vec3]   :vec3
+              [:vec2 :vec2]   :vec2}
+              [at bt])
+            ({
+              #{:mat2 :float} :mat2
+              #{:mat3 :float} :mat3
+              #{:mat4 :float} :mat4
+              #{:vec2 :float} :vec2
+              #{:vec3 :float} :vec3
+              #{:vec4 :float} :vec4} #{at bt}))
+              :clj (clojure.core/or
            ({[:float :float] :float
             [:mat4 :vec4]   :vec4
             [:mat3 :vec3]   :vec3
@@ -127,9 +149,9 @@
               #{:mat4 :float} :mat4
               #{:vec2 :float} :vec2
               #{:vec3 :float} :vec3
-              #{:vec4 :float} :vec4} #{at bt}))]
+              #{:vec4 :float} :vec4} #{at bt})))]
       (assoc (ast/term :* a b) :type t)
-      (throw (js/Error. (str "Arguments to * of incompatible type: " at "," bt))))))
+      (throw (error (str "Arguments to * of incompatible type: " at "," bt))))))
 
 (defn div [a b]
   (let [a (ensure-term a)
@@ -137,9 +159,9 @@
         t (arithmetic-type a b)]
     (if t
       (assoc (ast/term :div a b) :type t)
-      (throw (js/Error. (str "Arguments to div must have type :int or :float"))))))
+      (throw (error (str "Arguments to div must have type :int or :float"))))))
 
-
+(def / div)
 
 (defn < [a b] (assoc (ast/term :< (ensure-term a) (ensure-term b)) :type :bool))
 
@@ -162,7 +184,6 @@
 (defn not [a] (assoc (ast/term :not (ensure-term a)) :type :bool))
 
 
-
 (defn if [c a b]
   (let [a (ensure-term a)
         b (ensure-term b)
@@ -173,24 +194,21 @@
                  (ast/term :block a)
                  (ast/term :block b))
         :type at)
-      (throw (js/Error. (str "Branches of if term are not of same type: " at ", " bt) )))))
-
-
-
-
-
-
+      (throw (error (str "Branches of if term are not of same type: " at ", " bt) )))))
 
 (defn infer-parameterized-type [rule args]
   (let [prule (:parameter rule)
         input-types (:input rule)]
-    (if (cljs.core/not= (count input-types) (count args))
+    (if #?(:cljs (cljs.core/not= (count input-types) (count args))
+           :clj  (clojure.core/not= (count input-types) (count args)))
       :fail
       (loop [input args
              expected input-types
              parameter nil]
-        (if (clojure.core/or (empty? expected) (empty? input))
-          (if (clojure.core/and (empty? expected) (empty? input))
+        (if #?(:cljs (cljs.core/or (empty? expected) (empty? input))
+               :clj  (clojure.core/or (empty? expected) (empty? input)))
+          (if #?(:cljs (cljs.core/and (empty? expected) (empty? input))
+                 :clj  (clojure.core/and (empty? expected) (empty? input)))
             (if (prule (:output rule)) parameter (:output rule))
             :fail)
           (let [i (first input) e (first expected) p (prule e)]
@@ -211,25 +229,20 @@
                 (recur (next input) (next expected) parameter)
                 :fail))))))))
 
-
-
-
-
 (defn build-standard-function-term [name specs args]
   (let [t (apply ast/term name args)]
     (if-let [result
              (first
-               (filter #(cljs.core/not= :fail %)
+               (filter (fn [x] #?(:cljs (cljs.core/not= :fail x)
+                                  :clj (clojure.core/not= :fail x)))
                        (map #(infer-parameterized-type % (map :type (:body t)))
                             specs)))]
       (assoc t :type result)
-      (throw (js/Error. (apply str "Wrong argument types for term " (clojure.core/name name)
+      (throw (error (apply str "Wrong argument types for term " (clojure.core/name name)
                                 ": " (interpose " ," (map :type (:body t))))))
       )))
 
-
 (api-macro/gen-fns)
-
 
 (defn swizzle-type [x c]
   (let [swizzle-length (count (name c))
@@ -239,7 +252,6 @@
     (if (get depth-range-swizzles c)
       :float
       (get {1 :float 2 :vec2 3 :vec3 4 :vec4} swizzle-length))))
-
 
 (defn collection-element-type [x]
   ({:vec4 :float :vec3 :float :vec2 :float
@@ -251,7 +263,6 @@
     (assoc
      t
      :type (collection-element-type (:type (first (:body t)))))))
-
 
 (defn swizzle [x c]
   (assoc

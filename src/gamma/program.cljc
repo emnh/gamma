@@ -31,8 +31,6 @@
          (emit/emit (:ir shader) shader)
          {:width 80})))))
 
-
-
 (defn shader [shader opts]
   (let [ast (ast shader)
         ir (gamma.compiler.core/compile ast)
@@ -57,8 +55,6 @@
         :ast     ast}]
       p
       (assoc p :glsl (glsl p opts)))))
-
-
 
 (defn program-inputs [vs fs]
   (into

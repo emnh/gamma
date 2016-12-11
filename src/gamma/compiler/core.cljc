@@ -1,4 +1,5 @@
 (ns gamma.compiler.core
+  (:refer-clojure :exclude [compile])
   (:use [gamma.compiler.common :only [get-element map-path location-conj]]
         [gamma.ast :only [id? term]]
         [gamma.compiler.flatten-ast :only [flatten-ast]]
@@ -10,9 +11,6 @@
         [gamma.compiler.move-assignments :only [move-assignments]]
         ))
 
-
-
-
 (defn push-ops [db ops location stack]
   (reduce
     (fn [s o]
@@ -22,7 +20,6 @@
     stack
     (reverse ops)))
 
-
 (defn transform-1 [db stack]
   (loop [db db stack stack c 0]
     (if-let [f (peek stack)]
@@ -30,24 +27,17 @@
             (do
               ;(println [(f 1) (f 0)])
               ((f 1) db (f 0)))]
-
         (recur db (push-ops db ops (f 0) (pop stack)) (inc c)))
       db)))
 
 (defn transform [db f]
   (transform-1 db [[{:id :root :path []} f]]))
 
-
-
-
-
 (defn walk [db pre]
   (transform
     db
     (fn walk-fn [db path]
      [(pre db path) [[:body (map-path walk-fn)]]])))
-
-
 
 (defn variables [db]
   (let [a (atom #{})]

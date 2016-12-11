@@ -1,4 +1,6 @@
-(ns gamma.api)
+(ns gamma.api-macros)
+
+(println "api macroz")
 
 (def standard-functions
   (group-by :name
@@ -72,10 +74,7 @@
               [:vec4 :texture2DProj [:sampler2D :sampler :vec3 :coord]]
               [:vec4 :texture2DProj [:sampler2D :vec4 :coord]]
               [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]
-
               ])))
-
-
 
 (def operators
   (into
@@ -97,14 +96,11 @@
        {:operator :constructor}
        ])))
 
-
-
 ;; these guys should also do arg checking and type inference
 (defn ^:private gen-fn [tag]
   `(defn ~(symbol (name tag)) [& body#]
      (apply gamma.ast/term ~tag body#)
      #_(gamma.ast/->Term ~tag body# (gamma.ast/gen-term-id))))
-
 
 (defn define-standard-function [[n specs]]
   `(defn ~(symbol (name n)) [& body#]
@@ -114,8 +110,7 @@
   `(defn ~(symbol (name tag)) [& body#]
      (assoc (apply gamma.ast/term ~tag body#) :type ~tag)))
 
-
-(defmacro ^:private gen-fns []
+(defmacro gen-fns []
   `(do
      ~@(clojure.core/map define-standard-function standard-functions)
      ~@(clojure.core/map gen-fn

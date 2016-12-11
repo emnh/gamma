@@ -3,6 +3,8 @@
 
 ;(defrecord Term [head body id])
 
+(defn error [m] #?(:cljs (js/Error. m) :clj (Exception. m)))
+
 (defn head [x] (:head x))
 (defn body [x] (:body x))
 
@@ -26,24 +28,23 @@
 
 (defn literal [x]
   (let [type (cond
-               (clojure.core/or (= true x) (= false x)) :bool
+               (or (= true x) (= false x)) :bool
                ;(integer? x) :int
                (number? x) :float
                (map? x) (:type x)
-               :default (throw (js/Error. (str "Invalid literal: " (pr-str x)))))]
+               :default (throw (error (str "Invalid literal: " (pr-str x)))))]
     {:tag :term
      :head :literal
      :value x
      :type type
      :id (gen-term-id)}))
 
-
 (defn term [h & args]
+(println "term:" h args)
   {:tag :term
    :head h
    :body (map #(if (term? %) % (literal %)) args)
    :id (gen-term-id)})
-
 
 (def primitive-types
   [:bool
@@ -197,7 +198,6 @@
       [:vec4 :texture2DProj [:sampler2D :sampler :vec3 :coord]]
       [:vec4 :texture2DProj [:sampler2D :sampler :vec4 :coord]]
       [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]
-
       ])))
 
 
@@ -208,8 +208,6 @@
        :parameter {:mat #{:mat2 :mat3 :mat4}}})
     [[:mat :matrixCompMult [:mat :x :mat :y]]])
   )
-
-
 
 (def vector-relational-functions
   (map

@@ -53,7 +53,7 @@
        (try
          (let [x ((stages-map stage) input)]
            [x (assoc-in result [:stages stage] x)])
-         (catch js/Error e
+         (catch #?(:cljs js/Error :clj Exception) e
            (reduced [nil (assoc
                            (assoc-in result [:stages stage] e)
                            :exception-at stage)]))))
