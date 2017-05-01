@@ -1,6 +1,6 @@
-(defproject kovasb/gamma "auto"
+(defproject org.clojars.emh/gamma "0.1.4"
   :description "glsl shaders made simple"
-  :url "https://github.com/kovasb/gamma"
+  :url "https://github.com/emnh/gamma"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :deploy-repositories [["clojars" {:sign-releases false}]]
