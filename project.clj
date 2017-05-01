@@ -1,4 +1,4 @@
-(defproject kovasb/gamma "auto"
+(defproject org.clojars.emh/gamma "auto"
   :description "glsl shaders made simple"
   :url "https://github.com/kovasb/gamma"
   :license {:name "Eclipse Public License"
