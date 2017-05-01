@@ -1,4 +1,4 @@
-(defproject org.clojars.emh/gamma "0.1.4"
+(defproject org.clojars.emh/gamma "auto"
   :description "glsl shaders made simple"
   :url "https://github.com/emnh/gamma"
   :license {:name "Eclipse Public License"
