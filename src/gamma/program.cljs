@@ -45,8 +45,8 @@
                   #(#{:attribute :uniform :varying} (:storage %))
                   v)
         outputs (keys shader)
-        inputs (clojure.set/difference (into #{} globals) (into #{} outputs))
-        ]
+        inputs (clojure.set/difference (into #{} globals) (into #{} outputs))]
+
     (let
       [p
        {:tag     :shader
@@ -74,13 +74,6 @@
      (merge
        x
        {:tag             :program
-       :vertex-shader   vs
-       :fragment-shader fs
-       :inputs          (program-inputs vs fs)}))))
-
-
-
-
-
-
-
+        :vertex-shader   vs
+        :fragment-shader fs
+        :inputs          (program-inputs vs fs)}))))

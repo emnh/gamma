@@ -7,8 +7,8 @@
         [gamma.compiler.lift-assignments :only [lift-assignments]]
         [gamma.compiler.separate-usages :only [separate-usages]]
         [gamma.compiler.insert-variables :only [insert-variables]]
-        [gamma.compiler.move-assignments :only [move-assignments]]
-        ))
+        [gamma.compiler.move-assignments :only [move-assignments]]))
+
 
 
 
@@ -59,8 +59,9 @@
                        (swap! a conj (:value e))
                        (if (:type (:value e))
                          nil
-                         (println location))
-                       ))))
+                         nil)))))
+                         ;(println location))))))
+
                db))
     @a))
 
@@ -74,6 +75,3 @@
     (transform (insert-variables #{}))
     (transform (insert-assignments))
     (transform (move-assignments))))
-
-
-
