@@ -49,16 +49,16 @@
   [:bool
    :int
    ;;uint
-   :float
+   :float])
    ;;double
-   ])
+
 
 
 (def qualifiers
   {:storage [:const :attribute :uniform :varying]
    :precision [:highp :mediump :lowp]
-   :invariant [:in :out :inout]                             ;; ??
-   })
+   :invariant [:in :out :inout]})                             ;; ??
+
 
 
 
@@ -116,8 +116,8 @@
       {:operator :set- :literal "-=" :class :infix}
       {:operator :set* :literal "*=" :class :infix}
       {:operator :set-div :literal "/=" :class :infix}
-      {:operator :constructor}
-      ])))
+      {:operator :constructor}])))
+
 
 
 
@@ -183,6 +183,9 @@
       [:T :reflect [:T :I :T :N]]
       [:T :refract [:T :I :T :N :float :eta]]
 
+      ; general custom function
+      [:T :customfunction [:T :x]]
+
       [:vec4 :texture2DLod [:sampler2D :sampler :vec2 :coord :float :lod]]
       [:vec4 :texture2DProjLod [:sampler2D :sampler :vec3 :coord :float :lod]]
       [:vec4 :texture2DProjLod [:sampler2D :sampler :vec4 :coord :float :lod]]
@@ -196,9 +199,9 @@
       [:vec4 :texture2D [:sampler2D :sampler :vec2 :coord]]
       [:vec4 :texture2DProj [:sampler2D :sampler :vec3 :coord]]
       [:vec4 :texture2DProj [:sampler2D :sampler :vec4 :coord]]
-      [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]
+      [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]])))
 
-      ])))
+
 
 
 (def matrix-functions
@@ -206,8 +209,8 @@
     (fn [x]
       {:name      (x 1) :input (x 2) :output (x 0)
        :parameter {:mat #{:mat2 :mat3 :mat4}}})
-    [[:mat :matrixCompMult [:mat :x :mat :y]]])
-  )
+    [[:mat :matrixCompMult [:mat :x :mat :y]]]))
+
 
 
 
@@ -236,6 +239,3 @@
           (map :name vector-relational-functions)
           (map :name matrix-functions)
           (map first standard-functions))))
-
-
-

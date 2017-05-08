@@ -25,12 +25,15 @@
         (constructor? x)
         :constructor
         (if (function? x)
-         :function
-         (if-let [c (operator-class x)]
-           c
-           (if-let [h (head x)]
-             h
-             (:tag x))))))))
+          (if
+            (= :customfunction (head x))
+            :customfunction
+            :function)
+          (if-let [c (operator-class x)]
+            c
+            (if-let [h (head x)]
+              h
+              (:tag x))))))))
 
 
 (defmulti emit emit-dispatch)

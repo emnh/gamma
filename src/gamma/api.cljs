@@ -1,27 +1,27 @@
 (ns gamma.api
   (:refer-clojure
-  :exclude [aget
-            not
-            not=
-            or
-            set
-            *
-            +
-            -
-            <
-            >
-            <=
-            >=
-            ==
-            max
-            min
-            mod
-            and
-            if
-            for
+   :exclude [aget
+             not
+             not=
+             or
+             set
+             *
+             +
+             -
+             <
+             >
+             <=
+             >=
+             ==
+             max
+             min
+             mod
+             and
+             if
+             for
 
-            int
-            float])
+             int
+             float])
   (:require [gamma.ast :as ast])
   (:require-macros [gamma.api :as api-macro]))
 
@@ -111,15 +111,15 @@
     (if-let
       [t (cljs.core/or
            ({[:float :float] :float
-            [:mat4 :vec4]   :vec4
-            [:mat3 :vec3]   :vec3
-            [:mat2 :vec2]   :vec2
-            [:mat4 :mat4]   :mat4
-            [:mat3 :mat3]   :mat3
-            [:mat2 :mat2]   :mat2
-            [:vec4 :vec4]   :vec4
-            [:vec3 :vec3]   :vec3
-            [:vec2 :vec2]   :vec2}
+             [:mat4 :vec4]   :vec4
+             [:mat3 :vec3]   :vec3
+             [:mat2 :vec2]   :vec2
+             [:mat4 :mat4]   :mat4
+             [:mat3 :mat3]   :mat3
+             [:mat2 :mat2]   :mat2
+             [:vec4 :vec4]   :vec4
+             [:vec3 :vec3]   :vec3
+             [:vec2 :vec2]   :vec2}
             [at bt])
            ({
              #{:mat2 :float} :mat2
@@ -173,7 +173,7 @@
                  (ast/term :block a)
                  (ast/term :block b))
         :type at)
-      (throw (js/Error. (str "Branches of if term are not of same type: " at ", " bt) )))))
+      (throw (js/Error. (str "Branches of if term are not of same type: " at ", " bt))))))
 
 
 
@@ -224,8 +224,8 @@
                             specs)))]
       (assoc t :type result)
       (throw (js/Error. (apply str "Wrong argument types for term " (clojure.core/name name)
-                                ": " (interpose " ," (map :type (:body t))))))
-      )))
+                                ": " (interpose " ," (map :type (:body t)))))))))
+
 
 
 (api-macro/gen-fns)
@@ -258,5 +258,3 @@
     (ast/term :swizzle x)
     :swizzle c
     :type (swizzle-type x c)))
-
-

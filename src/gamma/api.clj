@@ -58,6 +58,9 @@
               [:T :reflect [:T :I :T :N]]
               [:T :refract [:T :I :T :N :float :eta]]
 
+              ; general custom function
+              [:T :customfunction [:T :x]]
+
               [:vec4 :texture2DLod [:sampler2D :sampler :vec2 :coord :float :lod]]
               [:vec4 :texture2DProjLod [:sampler2D :sampler :vec3 :coord :float :lod]]
               [:vec4 :texture2DProjLod [:sampler2D :sampler :vec4 :coord :float :lod]]
@@ -71,9 +74,9 @@
               [:vec4 :texture2D [:sampler2D :sampler :vec2 :coord]]
               [:vec4 :texture2DProj [:sampler2D :sampler :vec3 :coord]]
               [:vec4 :texture2DProj [:sampler2D :vec4 :coord]]
-              [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]
+              [:vec4 :textureCube [:samplerCube :sampler :vec3 :coord]]])))
 
-              ])))
+
 
 
 
@@ -94,8 +97,8 @@
        {:operator :set- :literal "-=" :class :infix}
        {:operator :set* :literal "*=" :class :infix}
        {:operator :set-div :literal "/=" :class :infix}
-       {:operator :constructor}
-       ])))
+       {:operator :constructor}])))
+
 
 
 

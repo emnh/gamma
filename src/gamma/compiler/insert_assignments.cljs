@@ -17,7 +17,7 @@
 (declare insert-assignments-sub)
 
 (defn insert-assignments []
-  (fn [db location ]
+  (fn [db location]
     (let [e (get-element db location)]
       (if (= :block (:head e))
         [db
@@ -47,18 +47,8 @@
         :block
         [db
          [(in-path [:body (- (count (:body e)) 1)] (insert-assignments-sub target-id))
-          (insert-assignments)
-          ]]
+          (insert-assignments)]]
+
         ;:set [db nil]
 
         [(insert-assignment db location target-id) nil]))))
-
-
-
-
-
-
-
-
-
-
